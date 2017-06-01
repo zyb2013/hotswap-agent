@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Agent-Class: com.yaowan.hotswap.HotSwapAgent
+Premain-Class: com.yaowan.hotswap.HotSwapAgent
+Can-Redefine-Classes: true
