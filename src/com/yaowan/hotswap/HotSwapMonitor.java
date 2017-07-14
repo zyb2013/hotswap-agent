@@ -29,7 +29,7 @@ public class HotSwapMonitor implements Runnable {
 
 	private int interval;
 
-	private static final Logger logger = Logger.getLogger(HotSwapAgent.class.getName());
+	private static final Logger logger = Logger.getLogger(HotSwapMonitor.class.getName());
 
 	public HotSwapMonitor(Instrumentation instrumentation, String classPath, int interval) {
 		this.instrumentation = instrumentation;
@@ -38,6 +38,7 @@ public class HotSwapMonitor implements Runnable {
 	}
 
 	public void start() {
+		logger.info("HotSwapMonitor start...");
 		executor.scheduleAtFixedRate(this, 0, interval, TimeUnit.MILLISECONDS);
 	}
 
@@ -46,7 +47,7 @@ public class HotSwapMonitor implements Runnable {
 		try {
 			scanClassFile();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "error", e);
+			logger.log(Level.SEVERE, "HotSwapMonitor error", e);
 		}
 	}
 
@@ -89,8 +90,8 @@ public class HotSwapMonitor implements Runnable {
 		in.readFully(buff);
 		in.close();
 		HotSwapClassLoader loader = new HotSwapClassLoader();
-		Class<?> updateCalss = loader.findClass(buff);
-		ClassDefinition definition = new ClassDefinition(Class.forName(updateCalss.getName()), buff);
+		Class<?> clazz = loader.findClass(buff);
+		ClassDefinition definition = new ClassDefinition(Class.forName(clazz.getName()), buff);
 		instrumentation.redefineClasses(new ClassDefinition[] { definition });
 	}
 

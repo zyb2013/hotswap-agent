@@ -45,11 +45,6 @@ public class HotSwapAgent {
 		new HotSwapAgent(inst, args);
 	}
 
-	public static void stop() {
-		// reloader.stop();
-		// executor.shutdown();
-	}
-
 	public HotSwapAgent(Instrumentation inst, AgentArgs args) {
 		this.instrumentation = inst;
 		this.classPath = args.getClassPath();
