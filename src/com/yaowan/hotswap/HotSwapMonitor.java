@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jdk.internal.org.objectweb.asm.ClassReader;
+
 /**
  * 热替换任务
  * 
@@ -84,15 +86,20 @@ public class HotSwapMonitor implements Runnable {
 	 * @param classFilePath
 	 */
 	private void reloadClass(String classFilePath) throws Exception {
-		File file = new File(classFilePath);
-		byte[] buff = new byte[(int) file.length()];
-		DataInputStream in = new DataInputStream(new FileInputStream(file));
-		in.readFully(buff);
-		in.close();
-		HotSwapClassLoader loader = new HotSwapClassLoader();
-		Class<?> clazz = loader.findClass(buff);
-		ClassDefinition definition = new ClassDefinition(Class.forName(clazz.getName()), buff);
-		instrumentation.redefineClasses(new ClassDefinition[] { definition });
+		DataInputStream in = null;
+		try {
+			File file = new File(classFilePath);
+			byte[] buff = new byte[(int) file.length()];
+			in = new DataInputStream(new FileInputStream(file));
+			in.readFully(buff);
+			ClassReader cr = new ClassReader(buff);
+			ClassDefinition definition = new ClassDefinition(Class.forName(cr.getClassName()), buff);
+			instrumentation.redefineClasses(new ClassDefinition[] { definition });
+		} catch (Exception e) {
+			if (in != null) {
+				in.close();
+			}
+		}
 	}
 
 	/**
